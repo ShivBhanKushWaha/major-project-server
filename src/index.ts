@@ -8,6 +8,8 @@ const app = express();
 
 import userSignup from './auth/userSignup';
 import userLogin from './auth/userLogin';
+import registerDoctor from './auth/registerDoctor';
+import signinDoctor from './auth/signinDoctor';
 
 
 // Middleware
@@ -22,6 +24,9 @@ app.get("/", (req, res) => {
 
 app.use('/auth', userSignup);
 app.use('/auth', userLogin);
+
+app.use('/auth', registerDoctor);
+app.use('/auth', signinDoctor);
 
 // Start server
 app.listen(PORT, () => {
