@@ -12,3 +12,44 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+model User {
+  id           Int    @id @default(autoincrement())
+  name         String
+  email        String @unique
+  mobileNumber String
+  password     String
+}
+
+model Admin {
+  id           Int    @id @default(autoincrement())
+  name         String
+  email String @unique
+  password String
+}
+
+model Doctor {
+  id                Int      @id @default(autoincrement())
+  name              String
+  phone             String   @unique
+  email             String   @unique
+  specialization    String
+  address1          String
+  address2          String?
+  city              String
+  state             String
+  zipCode           String
+  ugDegree          String
+  pgDegree          String?
+  instituteName     String
+  otherQualification String?
+  gender            String
+  fees              Float
+  availability      String   // You can store availability as JSON or a custom format
+  timeSlot          String   // You can store time slots as JSON or a custom format
+  password          String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
