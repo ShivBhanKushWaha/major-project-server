@@ -51,5 +51,6 @@ model Doctor {
   password          String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  experience        Int      // New field to store years of experience
 }
 

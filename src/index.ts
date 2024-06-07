@@ -15,8 +15,8 @@ import userLogin from './auth/userLogin';
 import registerDoctor from './auth/registerDoctor';
 import signinDoctor from './auth/signinDoctor';
 import admin from './auth/admin';
-
-
+import doctorList from './doctorList/allDoctorList';
+import doctorById from './doctorList/doctorById';
 // async function createAdmin() {
 
 //   const admin = {
@@ -53,6 +53,9 @@ app.use('/auth', registerDoctor);
 app.use('/auth', signinDoctor);
 
 app.use('/auth', admin);
+
+app.use('/', doctorById);
+app.use('/', doctorList);
 
 // Start server
 app.listen(PORT, () => {
