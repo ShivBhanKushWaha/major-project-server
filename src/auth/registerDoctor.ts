@@ -65,7 +65,7 @@ router.post('/registerDoctor', async (req, res) => {
     });
 
     // Generate JWT token
-    const token = generateToken(newDoctor.email);
+    const token = generateToken(newDoctor.id);
 
     res.status(201).json({ doctor: newDoctor, token });
   } catch (error) {

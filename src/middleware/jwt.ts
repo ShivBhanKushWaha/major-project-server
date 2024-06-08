@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const generateToken = (email:string) => {
+const generateToken = (email:any) => {
   return jwt.sign({ email: email }, process.env.JWT_SECRET as string
   );
 };
