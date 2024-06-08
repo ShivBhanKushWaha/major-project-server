@@ -6,7 +6,6 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 const app = express();
 
-
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
@@ -17,6 +16,8 @@ import signinDoctor from './auth/signinDoctor';
 import admin from './auth/admin';
 import doctorList from './doctorList/allDoctorList';
 import doctorById from './doctorList/doctorById';
+import patients from './doctor/patients';
+
 // async function createAdmin() {
 
 //   const admin = {
@@ -56,6 +57,8 @@ app.use('/auth', admin);
 
 app.use('/', doctorById);
 app.use('/', doctorList);
+
+app.use('/', patients);
 
 // Start server
 app.listen(PORT, () => {

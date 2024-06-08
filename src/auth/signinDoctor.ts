@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 router.post('/signinDoctor', async (req, res) => {
   const { email, password } = req.body;
-
+  
   try {
     // Find the doctor by email
     const doctor = await prisma.doctor.findUnique({
@@ -27,7 +27,7 @@ router.post('/signinDoctor', async (req, res) => {
     }
 
     // Generate JWT token
-    const token = generateToken(doctor.email);
+    const token = generateToken(doctor.id);
 
     res.status(200).json({ doctor, token });
   } catch (error) {

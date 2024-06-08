@@ -15,25 +15,26 @@ datasource db {
 
 
 model User {
-  id           Int    @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   name         String
-  email        String @unique
+  email        String       @unique
   mobileNumber String
   password     String
+  appointments Appointment[]
 }
 
 model Admin {
-  id           Int    @id @default(autoincrement())
-  name         String
-  email String @unique
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
   password String
 }
 
 model Doctor {
-  id                Int      @id @default(autoincrement())
+  id                Int          @id @default(autoincrement())
   name              String
-  phone             String   @unique
-  email             String   @unique
+  phone             String       @unique
+  email             String       @unique
   specialization    String
   address1          String
   address2          String?
@@ -46,11 +47,27 @@ model Doctor {
   otherQualification String?
   gender            String
   fees              Float
-  availability      String   // You can store availability as JSON or a custom format
-  timeSlot          String   // You can store time slots as JSON or a custom format
+  availability      String       // You can store availability as JSON or a custom format
+  timeSlot          String       // You can store time slots as JSON or a custom format
   password          String
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  experience        Int      // New field to store years of experience
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  experience        Int          // New field to store years of experience
+  appointments      Appointment[]
+}
+
+model Appointment {
+  id                Int          @id @default(autoincrement())
+  doctorId          Int
+  userId            Int
+  date              DateTime
+  status            String       // e.g., "treated", "booked"
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  
+  doctor            Doctor       @relation(fields: [doctorId], references: [id])
+  user              User         @relation(fields: [userId], references: [id])
+  
+  @@unique([doctorId, userId, date])
 }
 
