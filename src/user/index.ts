@@ -4,7 +4,6 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-router.use(express.json()); // Middleware to parse JSON bodies
 
 router.post('/userData', async (req, res) => {
   try {
