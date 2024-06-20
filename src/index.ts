@@ -17,6 +17,7 @@ import admin from './auth/admin';
 import doctorList from './doctorList/allDoctorList';
 import doctorById from './doctorList/doctorById';
 import patients from './doctor/patients';
+import Drashboad from './Drashboard'
 
 // async function createAdmin() {
 
@@ -59,6 +60,8 @@ app.use('/', doctorById);
 app.use('/', doctorList);
 
 app.use('/', patients);
+
+app.use('/', Drashboad);
 
 // Start server
 app.listen(PORT, () => {
