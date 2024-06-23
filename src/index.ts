@@ -20,6 +20,8 @@ import patients from './doctor/patients';
 import Drashboad from './Drashboard'
 import UserData from './user/index';
 import PatientDetails from './patientDetail/index'
+import doctorWithPatients from './doctorList/doctorWithPatients';
+import patientWithDoctorDetails from './patientDetail/patientWithDr';
 // async function createAdmin() {
 
 //   const admin = {
@@ -56,15 +58,30 @@ app.use('/auth', registerDoctor);
 app.use('/auth', signinDoctor);
 app.use('/auth', admin);
 
+
 app.use('/', doctorById);
+
+// return doctor list with all appointment counts with that doctor
 app.use('/', doctorList);
 
+// return the doctor with thier all appointments information
 app.use('/', patients);
 
 app.use('/', Drashboad);
+
 // userDate
 app.use('/', UserData);
+
+// Fill Patients Data
 app.use('/', PatientDetails);
+
+// return doctor information with thier Id and all Patients belonging to that doctor
+app.use('/', doctorWithPatients);
+
+// return PatientDetails With thier Doctor Details
+app.use('/', patientWithDoctorDetails);
+
+
 
 // Start server
 app.listen(PORT, () => {

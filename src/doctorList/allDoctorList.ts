@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// Route to get a list of doctors with minimal needed data including experience
+// Route to get a list of doctors with minimal needed data including experience and patient count
 router.get('/doctorList', async (req, res) => {
   try {
     const doctors = await prisma.doctor.findMany({
@@ -16,6 +16,9 @@ router.get('/doctorList', async (req, res) => {
         state: true,
         fees: true,
         experience: true, // Include experience in the selected fields
+        _count: {
+          select: { patientDetails: true },
+        },
       }
     });
 
@@ -23,8 +26,6 @@ router.get('/doctorList', async (req, res) => {
   } catch (error) {
     console.error('Error fetching doctor list:', error);
     res.status(500).json({ message: 'Internal server error' });
-  } finally {
-    await prisma.$disconnect();
   }
 });
 
