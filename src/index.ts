@@ -58,7 +58,7 @@ app.use('/auth', registerDoctor);
 app.use('/auth', signinDoctor);
 app.use('/auth', admin);
 
-
+// it only returns doctor information not patients
 app.use('/', doctorById);
 
 // return doctor list with all appointment counts with that doctor
