@@ -13,11 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id           Int          @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   name         String
-  email        String       @unique
+  email        String        @unique
   mobileNumber String
   password     String
   appointments Appointment[]
@@ -31,75 +30,71 @@ model Admin {
 }
 
 model Doctor {
-  id                Int              @id @default(autoincrement())
-  name              String
-  phone             String           @unique
-  email             String           @unique
-  specialization    String
-  address1          String
-  address2          String?
-  city              String
-  state             String
-  zipCode           String
-  ugDegree          String
-  pgDegree          String?
-  instituteNamePg   String 
-  instituteNameUg     String 
+  id                 Int              @id @default(autoincrement())
+  name               String
+  phone              String           @unique
+  email              String           @unique
+  specialization     String
+  address1           String
+  address2           String?
+  city               String
+  state              String
+  zipCode            String
+  ugDegree           String
+  pgDegree           String?
+  instituteNamePg    String
+  instituteNameUg    String
   otherQualification String?
-  gender            String
-  fees              Float
-  availability      String           // You can store availability as JSON or a custom format
-  password          String
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  experience        Int              // New field to store years of experience
-  appointments      Appointment[]
-  patientDetails    PatientDetails[] // Correctly define the relationship
+  gender             String
+  fees               Float
+  availability       String // You can store availability as JSON or a custom format
+  password           String
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  experience         Int // New field to store years of experience
+  appointments       Appointment[]
+  patientDetails     PatientDetails[] // Correctly define the relationship
 }
 
 model PatientDetails {
-  id                    Int      @id @default(autoincrement())
-  familyMember          String
-  age                   Int
-  gender                String
-  contactNumber         String
-  historyOfMentalIssue  String
-  symptoms              String
-  diagnosis             String
-  treatment             String
-  whichFamilyMember     String
-  symptomsOfPatient     String
-  whenProblemStart      String
+  id                       Int     @id @default(autoincrement())
+  familyMember             String
+  age                      Int
+  gender                   String
+  contactNumber            String
+  historyOfMentalIssue     String
+  symptoms                 String
+  diagnosis                String
+  treatment                String
+  whichFamilyMember        String
+  symptomsOfPatient        String
+  whenProblemStart         String
   previousPatientTreatment String
-  freqOfSymptoms        String
-  triggerPoint          String
-  capacityOfWork        String
-  sleepProper           Boolean
-  timeOfSleepHourly     Int
-  eatingProperly        Boolean
-  interestedToDoSomething Boolean
-  notInterested         String
+  freqOfSymptoms           String
+  triggerPoint             String
+  capacityOfWork           String
+  sleepProper              Boolean
+  timeOfSleepHourly        Int
+  eatingProperly           Boolean
+  interestedToDoSomething  Boolean
+  notInterested            String
   qualityTimeForThemselves Boolean
-  noThemselves          Boolean
-  doctorId              Int
-  doctor                Doctor   @relation(fields: [doctorId], references: [id])
+  noThemselves             Boolean
+  doctorId                 Int
+  doctor                   Doctor  @relation(fields: [doctorId], references: [id])
 }
-
-
 
 model Appointment {
-  id                Int          @id @default(autoincrement())
-  doctorId          Int
-  userId            Int
-  date              DateTime
-  status            String       // e.g., "treated", "booked"
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-  
-  doctor            Doctor       @relation(fields: [doctorId], references: [id])
-  user              User         @relation(fields: [userId], references: [id])
-  
+  id        Int      @id @default(autoincrement())
+  doctorId  Int
+  userId    Int
+  date      DateTime
+  status    String // e.g., "treated", "booked"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctor Doctor @relation(fields: [doctorId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
   @@unique([doctorId, userId, date])
 }
-
-
