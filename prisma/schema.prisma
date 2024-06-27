@@ -30,6 +30,34 @@ model Admin {
   password String
 }
 
+model Doctor {
+  id                Int              @id @default(autoincrement())
+  name              String
+  phone             String           @unique
+  email             String           @unique
+  specialization    String
+  address1          String
+  address2          String?
+  city              String
+  state             String
+  zipCode           String
+  ugDegree          String
+  pgDegree          String?
+  instituteNamePg   String 
+  instituteNameUg     String 
+  otherQualification String?
+  gender            String
+  fees              Float
+  availability      String           // You can store availability as JSON or a custom format
+  timeSlot          String           // You can store time slots as JSON or a custom format
+  password          String
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  experience        Int              // New field to store years of experience
+  appointments      Appointment[]
+  patientDetails    PatientDetails[] // Correctly define the relationship
+}
+
 model PatientDetails {
   id                    Int      @id @default(autoincrement())
   familyMember          String
@@ -58,32 +86,6 @@ model PatientDetails {
   doctor                Doctor   @relation(fields: [doctorId], references: [id])
 }
 
-model Doctor {
-  id                Int              @id @default(autoincrement())
-  name              String
-  phone             String           @unique
-  email             String           @unique
-  specialization    String
-  address1          String
-  address2          String?
-  city              String
-  state             String
-  zipCode           String
-  ugDegree          String
-  pgDegree          String?
-  instituteName     String
-  otherQualification String?
-  gender            String
-  fees              Float
-  availability      String           // You can store availability as JSON or a custom format
-  timeSlot          String           // You can store time slots as JSON or a custom format
-  password          String
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  experience        Int              // New field to store years of experience
-  appointments      Appointment[]
-  patientDetails    PatientDetails[]
-}
 
 
 model Appointment {
