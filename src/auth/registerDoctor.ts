@@ -24,7 +24,6 @@ router.post('/registerDoctor', async (req, res) => {
     gender,
     fees,
     availability,
-    timeSlot,
     password,
     experience
   } = req.body;
@@ -60,7 +59,6 @@ router.post('/registerDoctor', async (req, res) => {
         gender,
         fees: parseFloat(fees),
         availability, // Ensure this is a string or use JSON.stringify(availability)
-        timeSlot,     // Ensure this is a string or use JSON.stringify(timeSlot)
         password,
         experience
       },
