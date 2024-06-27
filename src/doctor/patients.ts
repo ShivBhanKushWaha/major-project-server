@@ -5,7 +5,7 @@ import authenticate from './../middleware/authenticate';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-router.get('/doctor/patients/', authenticate, async (req, res) => {
+router.get('/doctor/patients', authenticate, async (req, res) => {
   // @ts-ignore
   const doctorEmail = req.email; // Assuming you have the doctor's email in req.email after authentication
   console.log(doctorEmail);
