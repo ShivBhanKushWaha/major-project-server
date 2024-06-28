@@ -3,7 +3,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 dotenv.config();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 const app = express();
 
 // import { PrismaClient } from '@prisma/client';
@@ -22,6 +22,7 @@ import UserData from './user/index';
 import PatientDetails from './patientDetail/index'
 import doctorWithPatients from './doctorList/doctorWithPatients';
 import patientWithDoctorDetails from './patientDetail/patientWithDr';
+import patientSumission from './patientDetail/patientSubmission'
 // async function createAdmin() {
 
 //   const admin = {
@@ -80,6 +81,9 @@ app.use('/', doctorWithPatients);
 
 // return PatientDetails With thier Doctor Details
 app.use('/', patientWithDoctorDetails);
+
+
+app.use('/', patientSumission);
 
 
 
