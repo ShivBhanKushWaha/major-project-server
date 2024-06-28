@@ -5,9 +5,10 @@ import { generateToken } from './../middleware/jwt';
 const router = express.Router();
 const prisma = new PrismaClient();
 
+router.use(express.json());
+
 // Helper function to generate 30-minute time slots
-// @ts-ignore
-const generateTimeSlots = (startTime, endTime) => {
+const generateTimeSlots = (startTime : any, endTime : any) => {
   const slots = [];
   let currentTime = new Date(startTime);
 
@@ -19,7 +20,6 @@ const generateTimeSlots = (startTime, endTime) => {
 
   return slots;
 };
-
 // @ts-ignore
 const formatTime = date => {
   const hours = date.getHours();
@@ -27,6 +27,30 @@ const formatTime = date => {
   const period = hours >= 12 ? 'PM' : 'AM';
   const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
   return `${formattedHours}:${String(minutes).padStart(2, '0')} ${period}`;
+};
+
+// @ts-ignore
+const generateAvailabilitySlots = availabilityRanges => {
+  let availabilitySlots : any = [];
+  for (const range of availabilityRanges) {
+    const [startTime, endTime] = range.split(' - ');
+    const startDateTime = new Date(`1970-01-01T${convertTo24HourFormat(startTime)}`);
+    const endDateTime = new Date(`1970-01-01T${convertTo24HourFormat(endTime)}`);
+    availabilitySlots = availabilitySlots.concat(generateTimeSlots(startDateTime, endDateTime));
+  }
+  return availabilitySlots;
+};
+// @ts-ignore
+const convertTo24HourFormat = time => {
+  const [timePart, modifier] = time.split(' ');
+  let [hours, minutes] = timePart.split(':');
+  if (hours === '12') {
+    hours = '00';
+  }
+  if (modifier === 'PM') {
+    hours = parseInt(hours, 10) + 12;
+  }
+  return `${hours}:${minutes}:00`;
 };
 
 router.post('/registerDoctor', async (req, res) => {
@@ -47,8 +71,7 @@ router.post('/registerDoctor', async (req, res) => {
     otherQualification,
     gender,
     fees,
-    availabilityStart,
-    availabilityEnd,
+    availabilityRanges,
     password,
     experience
   } = req.body;
@@ -64,9 +87,7 @@ router.post('/registerDoctor', async (req, res) => {
     }
 
     // Generate availability slots
-    const startTime = new Date(availabilityStart);
-    const endTime = new Date(availabilityEnd);
-    const availabilitySlots = generateTimeSlots(startTime, endTime);
+    const availabilitySlots = generateAvailabilitySlots(availabilityRanges);
     const unBookedSlote = [...availabilitySlots]; // Initially all slots are unbooked
     const bookedSlote : any = []; // Initially empty
 
