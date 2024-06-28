@@ -8,7 +8,8 @@ const prisma = new PrismaClient();
 router.use(express.json());
 
 // Helper function to generate 30-minute time slots
-const generateTimeSlots = (startTime : any, endTime : any) => {
+// @ts-ignore
+const generateTimeSlots = (startTime, endTime) => {
   const slots = [];
   let currentTime = new Date(startTime);
 
@@ -28,21 +29,29 @@ const formatTime = date => {
   const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
   return `${formattedHours}:${String(minutes).padStart(2, '0')} ${period}`;
 };
-
 // @ts-ignore
 const generateAvailabilitySlots = availabilityRanges => {
-  let availabilitySlots : any = [];
+  // @ts-ignore
+  let availabilitySlots = [];
   for (const range of availabilityRanges) {
     const [startTime, endTime] = range.split(' - ');
+    if (!startTime || !endTime) {
+      throw new Error(`Invalid time range: ${range}`);
+    }
     const startDateTime = new Date(`1970-01-01T${convertTo24HourFormat(startTime)}`);
     const endDateTime = new Date(`1970-01-01T${convertTo24HourFormat(endTime)}`);
+    // @ts-ignore
     availabilitySlots = availabilitySlots.concat(generateTimeSlots(startDateTime, endDateTime));
   }
   return availabilitySlots;
 };
+
 // @ts-ignore
 const convertTo24HourFormat = time => {
   const [timePart, modifier] = time.split(' ');
+  if (!timePart || !modifier) {
+    throw new Error(`Invalid time format: ${time}`);
+  }
   let [hours, minutes] = timePart.split(':');
   if (hours === '12') {
     hours = '00';
@@ -88,8 +97,9 @@ router.post('/registerDoctor', async (req, res) => {
 
     // Generate availability slots
     const availabilitySlots = generateAvailabilitySlots(availabilityRanges);
+    console.log(availabilitySlots);
     const unBookedSlote = [...availabilitySlots]; // Initially all slots are unbooked
-    const bookedSlote : any = []; // Initially empty
+    const bookedSlote : any= []; // Initially empty
 
     // Create new doctor
     const newDoctor = await prisma.doctor.create({
@@ -123,8 +133,10 @@ router.post('/registerDoctor', async (req, res) => {
 
     res.status(201).json({ doctor: newDoctor, token });
   } catch (error) {
-    console.error('Error during doctor registration:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    // @ts-ignore
+    console.error('Error during doctor registration:', error.message);
+    // @ts-ignore
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   } finally {
     await prisma.$disconnect();
   }
