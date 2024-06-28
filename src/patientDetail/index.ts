@@ -9,6 +9,7 @@ router.use(express.json()); // Middleware to parse JSON bodies
 router.post('/patient/details', async (req, res) => {
   try {
     const {
+      selectSlot,
       doctorEmail,
       doctorName,
       doctorId,
@@ -39,7 +40,7 @@ router.post('/patient/details', async (req, res) => {
     // Fetch the doctor based on the provided identifier
     let doctor;
     if (doctorId) {
-      doctor = await prisma.doctor.findUnique({ where: { id: doctorId } });
+      doctor = await prisma.doctor.findUnique({ where: {id: parseInt(doctorId, 10)} });
     } else if (doctorEmail) {
       doctor = await prisma.doctor.findUnique({ where: { email: doctorEmail } });
     } else if (doctorName) {
@@ -52,6 +53,7 @@ router.post('/patient/details', async (req, res) => {
 
     const patientDetails = await prisma.patientDetails.create({
       data: {
+        selectSlot,
         familyMember,
         age,
         gender,

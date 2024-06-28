@@ -83,6 +83,7 @@ model PatientDetails {
   qualityTimeForThemselves Boolean
   noThemselves             Boolean
   doctorId                 Int
+  selectSlot               String
   doctor                   Doctor   @relation(fields: [doctorId], references: [id])
 }
 
