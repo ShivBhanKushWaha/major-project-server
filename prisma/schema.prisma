@@ -59,32 +59,33 @@ model Doctor {
 }
 
 model PatientDetails {
-  id                       Int     @id @default(autoincrement())
+  id                       Int      @id @default(autoincrement())
   familyMember             String
   age                      Int
   gender                   String
   contactNumber            String
-  historyOfMentalIssue     String
+  historyOfMentalIssue     String?
   symptoms                 String
   diagnosis                String
   treatment                String
   whichFamilyMember        String
   symptomsOfPatient        String
-  whenProblemStart         String
+  whenProblemStart         String?
   previousPatientTreatment String
   freqOfSymptoms           String
   triggerPoint             String
   capacityOfWork           String
   sleepProper              Boolean
-  timeOfSleepHourly        Int
+  timeOfSleepHourly        Int?
   eatingProperly           Boolean
   interestedToDoSomething  Boolean
-  notInterested            String
+  notInterested            String?
   qualityTimeForThemselves Boolean
   noThemselves             Boolean
   doctorId                 Int
-  doctor                   Doctor  @relation(fields: [doctorId], references: [id])
+  doctor                   Doctor   @relation(fields: [doctorId], references: [id])
 }
+
 
 model Appointment {
   id        Int      @id @default(autoincrement())
