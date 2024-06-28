@@ -31,13 +31,17 @@ router.post('/api/patient-details', async (req, res) => {
     notInterested,
     qualityTimeForThemselves,
     noThemselves,
-    doctorId
+    doctorId,
+    selectSlot
   } = req.body;
 
   try {
     // Save patient details to the database using Prisma
+
+    // add google meet link to the patient
     const newPatient = await prisma.patientDetails.create({
       data: {
+        selectSlot,
         familyMember,
         age,
         gender,
