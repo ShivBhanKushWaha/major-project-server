@@ -29,18 +29,18 @@ router.post('/patient/details', async (req, res) => {
       triggerPoint,
       capacityOfWork,
       sleepProper,
-      timeOfSleepHourly,
+      timeOfSleep,
       eatingProperly,
       interestedToDoSomething,
       notInterested,
-      qualityTimeForThemselves,
-      noThemselves
+      selfTime,
+      notSelfTime,
     } = req.body;
 
     // Fetch the doctor based on the provided identifier
     let doctor;
     if (doctorId) {
-      doctor = await prisma.doctor.findUnique({ where: {id: parseInt(doctorId, 10)} });
+      doctor = await prisma.doctor.findUnique({ where: { id: parseInt(doctorId, 10) } });
     } else if (doctorEmail) {
       doctor = await prisma.doctor.findUnique({ where: { email: doctorEmail } });
     } else if (doctorName) {
@@ -70,12 +70,12 @@ router.post('/patient/details', async (req, res) => {
         triggerPoint,
         capacityOfWork,
         sleepProper,
-        timeOfSleepHourly,
+        timeOfSleep,
         eatingProperly,
         interestedToDoSomething,
         notInterested,
-        qualityTimeForThemselves,
-        noThemselves,
+        selfTime,
+        notSelfTime,
         doctorId: doctor.id
       }
     });

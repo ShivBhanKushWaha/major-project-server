@@ -76,12 +76,12 @@ model PatientDetails {
   triggerPoint             String
   capacityOfWork           String
   sleepProper              Boolean
-  timeOfSleepHourly        Int?
+  timeOfSleep              Int?
   eatingProperly           Boolean
   interestedToDoSomething  Boolean
   notInterested            String?
-  qualityTimeForThemselves Boolean
-  noThemselves             Boolean
+  selfTime                 Boolean
+  notSelfTime              Boolean
   doctorId                 Int
   selectSlot               String
   doctor                   Doctor   @relation(fields: [doctorId], references: [id])
