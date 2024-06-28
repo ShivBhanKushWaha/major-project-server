@@ -3,7 +3,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 dotenv.config();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 const app = express();
 
 // import { PrismaClient } from '@prisma/client';

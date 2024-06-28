@@ -4,7 +4,6 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-
 router.post('/userData', async (req, res) => {
   try {
     const { id, email } = req.body;
@@ -17,7 +16,7 @@ router.post('/userData', async (req, res) => {
     let user;
     if (id) {
       user = await prisma.user.findUnique({
-        where: { id: parseInt(id, 10) },
+        where: { id: id }, // No need to parse to int, MongoDB id is a string
         include: { appointments: true }, // Include related appointments if needed
       });
     } else if (email) {
