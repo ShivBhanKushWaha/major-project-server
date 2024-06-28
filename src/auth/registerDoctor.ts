@@ -1,35 +1,62 @@
-import express from 'express';
-import { PrismaClient } from '@prisma/client';
-import { generateToken } from './../middleware/jwt';
+import express from "express";
+import { PrismaClient } from "@prisma/client";
+import { generateToken } from "./../middleware/jwt";
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// Helper function to generate 30-minute time slots
-// @ts-ignore
-const generateTimeSlots = (startTime, endTime) => {
-  const slots = [];
-  let currentTime = new Date(startTime);
 
-  while (currentTime < endTime) {
-    const nextTime = new Date(currentTime.getTime() + 30 * 60000); // Add 30 minutes
-    slots.push(`${formatTime(currentTime)} - ${formatTime(nextTime)}`);
-    currentTime = nextTime;
+// Function to convert 12-hour format time to minutes
+const timeToMinutes = (time: string): number => {
+  const [timePart, meridiem] = time.split(" ");
+  let [hours, minutes] = timePart.split(":").map(Number);
+
+  if (meridiem === "PM" && hours !== 12) hours += 12;
+  if (meridiem === "AM" && hours === 12) hours = 0;
+
+  return hours * 60 + minutes;
+};
+
+// Function to convert minutes to 12-hour format time string
+const minutesToTime = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  const period = hours < 12 || hours === 24 ? "AM" : "PM";
+  const adjustedHours = hours % 12 === 0 ? 12 : hours % 12;
+
+  return `${adjustedHours.toString().padStart(2, "0")}:${mins
+    .toString()
+    .padStart(2, "0")} ${period}`;
+};
+
+// Function to create 30-minute slots
+const generate30MinSlots = (start: string, end: string): string[] => {
+  const startTime = timeToMinutes(start);
+  const endTime = timeToMinutes(end);
+  const slots = [];
+
+  for (let time = startTime; time < endTime; time += 30) {
+    const slotStart = minutesToTime(time);
+    const slotEnd = minutesToTime(time + 30);
+    slots.push(`${slotStart} - ${slotEnd}`);
   }
 
   return slots;
 };
 
-// @ts-ignore
-const formatTime = date => {
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  const period = hours >= 12 ? 'PM' : 'AM';
-  const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-  return `${formattedHours}:${String(minutes).padStart(2, '0')} ${period}`;
+// Main function to generate all unbooked slots
+const generateUnbookedSlots = (availableSlots: string[]): string[] => {
+  let unbookedSlots: string[] = [];
+
+  availableSlots.forEach((slot) => {
+    const [start, end] = slot.split(" - ");
+    unbookedSlots = [...unbookedSlots, ...generate30MinSlots(start, end)];
+  });
+
+  return unbookedSlots;
 };
 
-router.post('/registerDoctor', async (req, res) => {
+router.post("/registerDoctor", async (req, res) => {
   const {
     name,
     phone,
@@ -47,10 +74,9 @@ router.post('/registerDoctor', async (req, res) => {
     otherQualification,
     gender,
     fees,
-    availabilityStart,
-    availabilityEnd,
+    availabilityRanges,
     password,
-    experience
+    experience,
   } = req.body;
 
   try {
@@ -60,15 +86,15 @@ router.post('/registerDoctor', async (req, res) => {
     });
 
     if (existingDoctor) {
-      return res.status(400).json({ message: 'Doctor already exists with this email' });
+      return res
+        .status(400)
+        .json({ message: "Doctor already exists with this email" });
     }
 
-    // Generate availability slots
-    const startTime = new Date(availabilityStart);
-    const endTime = new Date(availabilityEnd);
-    const availabilitySlots = generateTimeSlots(startTime, endTime);
-    const unBookedSlote = [...availabilitySlots]; // Initially all slots are unbooked
-    const bookedSlote : any = []; // Initially empty
+    // Generate unbooked slots
+    const unBookedSlote: string[] = generateUnbookedSlots(availabilityRanges);
+    console.log(unBookedSlote);
+    const bookedSlote: any = []; // Initially empty
 
     // Create new doctor
     const newDoctor = await prisma.doctor.create({
@@ -89,11 +115,11 @@ router.post('/registerDoctor', async (req, res) => {
         otherQualification,
         gender,
         fees: parseFloat(fees),
-        availability: availabilitySlots, // Store as array of time slots
-        bookedSlote,
-        unBookedSlote,
+        availability: availabilityRanges, // Store as array of time slots
+        bookedSlote:[],
+        unBookedSlote:unBookedSlote,
         password,
-        experience
+        experience,
       },
     });
 
@@ -102,8 +128,8 @@ router.post('/registerDoctor', async (req, res) => {
 
     res.status(201).json({ doctor: newDoctor, token });
   } catch (error) {
-    console.error('Error during doctor registration:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error during doctor registration:", error);
+    res.status(500).json({ message: "Internal server error" });
   } finally {
     await prisma.$disconnect();
   }
