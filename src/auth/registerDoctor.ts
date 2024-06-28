@@ -5,6 +5,30 @@ import { generateToken } from './../middleware/jwt';
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Helper function to generate 30-minute time slots
+// @ts-ignore
+const generateTimeSlots = (startTime, endTime) => {
+  const slots = [];
+  let currentTime = new Date(startTime);
+
+  while (currentTime < endTime) {
+    const nextTime = new Date(currentTime.getTime() + 30 * 60000); // Add 30 minutes
+    slots.push(`${formatTime(currentTime)} - ${formatTime(nextTime)}`);
+    currentTime = nextTime;
+  }
+
+  return slots;
+};
+
+// @ts-ignore
+const formatTime = date => {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+  return `${formattedHours}:${String(minutes).padStart(2, '0')} ${period}`;
+};
+
 router.post('/registerDoctor', async (req, res) => {
   const {
     name,
@@ -23,11 +47,11 @@ router.post('/registerDoctor', async (req, res) => {
     otherQualification,
     gender,
     fees,
-    availability,
+    availabilityStart,
+    availabilityEnd,
     password,
     experience
   } = req.body;
-
 
   try {
     // Check if doctor already exists
@@ -38,6 +62,13 @@ router.post('/registerDoctor', async (req, res) => {
     if (existingDoctor) {
       return res.status(400).json({ message: 'Doctor already exists with this email' });
     }
+
+    // Generate availability slots
+    const startTime = new Date(availabilityStart);
+    const endTime = new Date(availabilityEnd);
+    const availabilitySlots = generateTimeSlots(startTime, endTime);
+    const unBookedSlote = [...availabilitySlots]; // Initially all slots are unbooked
+    const bookedSlote : any = []; // Initially empty
 
     // Create new doctor
     const newDoctor = await prisma.doctor.create({
@@ -58,7 +89,9 @@ router.post('/registerDoctor', async (req, res) => {
         otherQualification,
         gender,
         fees: parseFloat(fees),
-        availability, // Ensure this is a string or use JSON.stringify(availability)
+        availability: availabilitySlots, // Store as array of time slots
+        bookedSlote,
+        unBookedSlote,
         password,
         experience
       },

@@ -47,13 +47,15 @@ model Doctor {
   otherQualification String?
   gender             String
   fees               Float
-  availability       String // You can store availability as JSON or a custom format
+  availability       String[]         // Original availability
+  bookedSlote        String[]         // New field for booked slots
+  unBookedSlote      String[]         // New field for unbooked slots
   password           String
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
-  experience         Int // New field to store years of experience
+  experience         Int
   appointments       Appointment[]
-  patientDetails     PatientDetails[] // Correctly define the relationship
+  patientDetails     PatientDetails[]
 }
 
 model PatientDetails {

@@ -2,13 +2,59 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+const generateTimeSlots = (startTime, endTime) => {
+  const slots = [];
+  let currentTime = new Date(startTime);
+
+  while (currentTime < endTime) {
+    const nextTime = new Date(currentTime.getTime() + 30 * 60000); // Add 30 minutes
+    slots.push(`${formatTime(currentTime)} - ${formatTime(nextTime)}`);
+    currentTime = nextTime;
+  }
+
+  return slots;
+};
+
+const formatTime = date => {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+  return `${formattedHours}:${String(minutes).padStart(2, '0')} ${period}`;
+};
+
 async function main() {
+  // Function to delete all existing data
+  async function deleteAllData() {
+    try {
+      // Delete all data from related tables first to avoid foreign key constraints
+      await prisma.appointment.deleteMany({});
+      await prisma.patientDetails.deleteMany({});
+      await prisma.user.deleteMany({});
+      await prisma.admin.deleteMany({});
+      await prisma.doctor.deleteMany({});
+  
+      console.log('All data deleted successfully');
+    } catch (error) {
+      console.error('Error deleting data:', error);
+    }
+  }
+
+  // Delete all existing data before creating new data
+  await deleteAllData();
+
   // Create 10 doctors
   const doctors = await Promise.all(Array.from({ length: 10 }).map(async (_, i) => {
+    const startTime = new Date('2024-07-01T10:00:00');
+    const endTime = new Date('2024-07-01T13:00:00');
+    const availability = generateTimeSlots(startTime, endTime);
+    const unBookedSlote = [...availability];
+    const bookedSlote = []; // Initially empty
+
     return prisma.doctor.create({
       data: {
         name: `Doctor ${i + 1}`,
-        phone: `123456789${i}`,
+        phone: `123456789${i + 1}`,
         email: `doctor${i + 1}@example.com`,
         specialization: `Specialization ${i + 1}`,
         address1: `Address 1 - ${i + 1}`,
@@ -23,13 +69,16 @@ async function main() {
         otherQualification: `Qualification ${i + 1}`,
         gender: i % 2 === 0 ? 'Male' : 'Female',
         fees: 100 + i * 10,
-        availability: `Availability ${i + 1}`,
-        timeSlot: `Time Slot ${i + 1}`,
+        availability,
+        bookedSlote,
+        unBookedSlote,
         password: `password${i + 1}`,
         experience: 5 + i
       }
     });
   }));
+
+  console.log('Doctors created:', doctors);
 
   // Create 10 users
   const users = await Promise.all(Array.from({ length: 10 }).map(async (_, i) => {
@@ -42,6 +91,8 @@ async function main() {
       }
     });
   }));
+
+  console.log('Users created:', users);
 
   // Create 10 patient details linked to doctors
   const patientDetails = await Promise.all(Array.from({ length: 10 }).map(async (_, i) => {
@@ -74,6 +125,8 @@ async function main() {
     });
   }));
 
+  console.log('Patient details created:', patientDetails);
+
   // Create 10 admins
   const admins = await Promise.all(Array.from({ length: 10 }).map(async (_, i) => {
     return prisma.admin.create({
@@ -84,6 +137,8 @@ async function main() {
       }
     });
   }));
+
+  console.log('Admins created:', admins);
 
   // Create 10 appointments linked to doctors and users
   const appointments = await Promise.all(Array.from({ length: 10 }).map(async (_, i) => {
@@ -97,7 +152,7 @@ async function main() {
     });
   }));
 
-  console.log('Dummy data created successfully');
+  console.log('Appointments created:', appointments);
 }
 
 main()
