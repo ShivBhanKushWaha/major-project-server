@@ -53,7 +53,7 @@ model Doctor {
   password           String
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
-  experience         Int
+  experience         String
   appointments       Appointment[]
   patientDetails     PatientDetails[]
 }
