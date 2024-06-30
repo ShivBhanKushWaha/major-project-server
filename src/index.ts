@@ -17,7 +17,7 @@ import admin from './auth/admin';
 import doctorList from './doctorList/allDoctorList';
 import doctorById from './doctorList/doctorById';
 import patients from './doctor/patients';
-import Drashboad from './Drashboard'
+import Drashboad from './Dashboard'
 import UserData from './user/index';
 import PatientDetails from './patientDetail/index'
 import doctorWithPatients from './doctorList/doctorWithPatients';
