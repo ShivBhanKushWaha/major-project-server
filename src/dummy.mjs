@@ -1,8 +1,13 @@
+// seed.ts
+
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+
+// @ts-ignore
 const generateTimeSlots = (startTime, endTime) => {
+  // @ts-ignore
   const slots = [];
   let currentTime = new Date(startTime);
 
@@ -15,7 +20,8 @@ const generateTimeSlots = (startTime, endTime) => {
   return slots;
 };
 
-const formatTime = date => {
+// @ts-ignore
+const formatTime = (date) => {
   const hours = date.getHours();
   const minutes = date.getMinutes();
   const period = hours >= 12 ? 'PM' : 'AM';
@@ -43,8 +49,30 @@ async function main() {
   // Delete all existing data before creating new data
   await deleteAllData();
 
+  // Sample Indian names and degrees
+  const doctorNames = [
+    "Dr. Asha Patel", "Dr. Vikram Singh", "Dr. Sunita Sharma", 
+    "Dr. Anil Kumar", "Dr. Priya Mehta", "Dr. Rajesh Gupta",
+    "Dr. Neha Verma", "Dr. Amit Joshi", "Dr. Ritu Shah", "Dr. Suresh Reddy"
+  ];
+  const userNames = [
+    "Rahul Desai", "Sneha Rao", "Arjun Nair", "Pooja Choudhary", 
+    "Ravi Malhotra", "Nisha Yadav", "Vikash Pandey", "Kiran Pawar", 
+    "Sachin Goel", "Anjali Iyer"
+  ];
+  const degrees = [
+    "MBBS", "MD", "BDS", "MDS", "BAMS", "BHMS", "BPT", "MPT", 
+    "MS (General Surgery)", "MD (Pediatrics)"
+  ];
+  const institutes = [
+    "AIIMS", "Kasturba Medical College", "JIPMER", "Christian Medical College",
+    "St. John's Medical College", "Madras Medical College", 
+    "Grant Medical College", "Seth GS Medical College", "Maulana Azad Medical College",
+    "Lady Hardinge Medical College"
+  ];
+
   // Create 10 doctors
-  const doctors = await Promise.all(Array.from({ length: 10 }).map(async (_, i) => {
+  const doctors = await Promise.all(doctorNames.map(async (name, i) => {
     const startTime = new Date('2024-07-01T10:00:00');
     const endTime = new Date('2024-07-01T13:00:00');
     const availability = generateTimeSlots(startTime, endTime);
@@ -53,7 +81,7 @@ async function main() {
 
     return prisma.doctor.create({
       data: {
-        name: `Doctor ${i + 1}`,
+        name,
         phone: `123456789${i + 1}`,
         email: `doctor${i + 1}@example.com`,
         specialization: `Specialization ${i + 1}`,
@@ -62,10 +90,10 @@ async function main() {
         city: `City ${i + 1}`,
         state: `State ${i + 1}`,
         zipCode: `12345${i}`,
-        ugDegree: `UG Degree ${i + 1}`,
-        pgDegree: `PG Degree ${i + 1}`,
-        instituteNameUg: `Institute ${i + "Ug"}`,
-        instituteNamePg: `Institute ${i + "Pg"}`,
+        ugDegree: degrees[Math.floor(Math.random() * degrees.length)],
+        pgDegree: degrees[Math.floor(Math.random() * degrees.length)],
+        instituteNameUg: institutes[Math.floor(Math.random() * institutes.length)],
+        instituteNamePg: institutes[Math.floor(Math.random() * institutes.length)],
         otherQualification: `Qualification ${i + 1}`,
         gender: i % 2 === 0 ? 'Male' : 'Female',
         fees: 100 + i * 10,
@@ -73,7 +101,7 @@ async function main() {
         bookedSlote,
         unBookedSlote,
         password: `password${i + 1}`,
-        experience: 5 + i
+        experience: `5 + ${i + 1}`,
       }
     });
   }));
@@ -81,10 +109,10 @@ async function main() {
   console.log('Doctors created:', doctors);
 
   // Create 10 users
-  const users = await Promise.all(Array.from({ length: 10 }).map(async (_, i) => {
+  const users = await Promise.all(userNames.map(async (name, i) => {
     return prisma.user.create({
       data: {
-        name: `User ${i + 1}`,
+        name,
         email: `user${i + 1}@example.com`,
         mobileNumber: `987654321${i}`,
         password: `userpassword${i + 1}`
@@ -113,14 +141,14 @@ async function main() {
         freqOfSymptoms: `Frequency ${i + 1}`,
         triggerPoint: `Trigger Point ${i + 1}`,
         capacityOfWork: `Capacity ${i + 1}`,
-        sleepProper: i % 2 === 0,
-        timeOfSleepHourly: 6 + i,
-        eatingProperly: i % 2 === 0,
-        interestedToDoSomething: i % 2 === 0,
+        sleepProper: i % 2 === 0 ? 'Yes' : 'No',
+        timeOfSleep: `${6 + i} hours`,
+        eatingProperly: i % 2 === 0 ? 'Yes' : 'No',
+        interestedToDoSomething: i % 2 === 0 ? 'Yes' : 'No',
         notInterested: `Not Interested ${i + 1}`,
-        qualityTimeForThemselves: i % 2 === 0,
-        noThemselves: i % 2 === 0,
-        doctorId: doctors[i].id // Link to the doctor
+        selfTime: 'yes',
+        notSelfTime: 'no',
+        doctorId: doctors[i % doctors.length].id // Link to a doctor
       }
     });
   }));
@@ -144,8 +172,8 @@ async function main() {
   const appointments = await Promise.all(Array.from({ length: 10 }).map(async (_, i) => {
     return prisma.appointment.create({
       data: {
-        doctorId: doctors[i].id,
-        userId: users[i].id,
+        doctorId: doctors[i % doctors.length].id,
+        userId: users[i % users.length].id,
         date: new Date(),
         status: i % 2 === 0 ? 'treated' : 'booked'
       }

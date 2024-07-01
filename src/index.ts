@@ -23,6 +23,7 @@ import PatientDetails from './patientDetail/index'
 import doctorWithPatients from './doctorList/doctorWithPatients';
 import patientWithDoctorDetails from './patientDetail/patientWithDr';
 import userDetail from './user/userDetails';
+import patientById from './patientDetail/patientById'
 // async function createAdmin() {
 
 //   const admin = {
@@ -84,6 +85,11 @@ app.use('/', patientWithDoctorDetails);
 
 
 app.use('/', userDetail);
+
+
+app.use('/', patientById);
+
+
 
 
 // Start server
