@@ -10,7 +10,7 @@ router.get('/doctorWithPatient/:id', async (req, res) => {
 
   try {
     const doctor = await prisma.doctor.findUnique({
-      where: { id: parseInt(id, 10) }, // Ensure ID is an integer
+      where: { id: parseInt(id, 10) }, // Use string type for MongoDB ObjectId
       include: {
         patientDetails: true, // Include related patient details
       },
@@ -23,7 +23,34 @@ router.get('/doctorWithPatient/:id', async (req, res) => {
       return res.status(404).json({ message: 'Doctor not found' });
     }
 
-    res.status(200).json(doctor);
+    const doctorDetail = {
+      id: doctor.id,
+      name: doctor.name,
+      phone: doctor.phone,
+      email: doctor.email,
+      specialization: doctor.specialization,
+      address1: doctor.address1,
+      address2: doctor.address2,
+      city: doctor.city,
+      state: doctor.state,
+      zipCode: doctor.zipCode,
+      ugDegree: doctor.ugDegree,
+      pgDegree: doctor.pgDegree,
+      instituteNamePg: doctor.instituteNamePg,
+      instituteNameUg: doctor.instituteNameUg,
+      otherQualification: doctor.otherQualification,
+      gender: doctor.gender,
+      fees: doctor.fees,
+      availability: doctor.availability,
+      password: doctor.password,
+      createdAt: doctor.createdAt,
+      updatedAt: doctor.updatedAt,
+      experience: doctor.experience,
+    };
+    // @ts-ignore
+    const patientDetail : any = doctor.patientDetails;
+
+    res.status(200).json({ doctorDetail, patientDetail });
   } catch (error) {
     console.error('Error fetching doctor by ID:', error);
     res.status(500).json({ message: 'Internal server error' });
