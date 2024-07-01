@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 router.get('/dashboard', async (req, res) => {
   try {
     const totalDoctors = await prisma.doctor.count();
-    const totalPatients = await prisma.user.count();
+    const totalPatients = await prisma.patientDetails.count();
     const totalAppointments = await prisma.appointment.count();
 
     res.json({
