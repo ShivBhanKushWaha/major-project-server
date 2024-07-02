@@ -16,7 +16,14 @@ router.get('/patient/details/:id', async (req, res) => {
   try {
     const patientDetails = await prisma.patientDetails.findUnique({
       where: { id: patientId },
-      include: { doctor: true },
+      include: {
+        doctor: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
 
     if (!patientDetails) {

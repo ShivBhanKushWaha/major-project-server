@@ -24,6 +24,7 @@ import doctorWithPatients from './doctorList/doctorWithPatients';
 import patientWithDoctorDetails from './patientDetail/patientWithDr';
 import userDetail from './user/userDetails';
 import patientById from './patientDetail/patientById'
+import PatientTreatment from './patientDetail/patientTreatment'
 // async function createAdmin() {
 
 //   const admin = {
@@ -88,6 +89,8 @@ app.use('/', userDetail);
 
 
 app.use('/', patientById);
+
+app.use('/', PatientTreatment);
 
 
 

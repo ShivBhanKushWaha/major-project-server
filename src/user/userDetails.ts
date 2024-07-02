@@ -15,37 +15,43 @@ router.get('/userDetails', authenticate, async (req: any, res: any) => {
       details: any;
     } | null = null;
 
-    // Check in User collection
-    let user = await prisma.user.findUnique({
-      where: { email: email },
-      include: { appointments: true }, // Include related appointments if needed
-    });
+    // Parallel promises to search in all collections
+    const [user, doctor, admin] = await Promise.all([
+      prisma.user.findUnique({
+        where: { email: email },
+        include: {
+          appointments: true,
+        }, // Include related appointments if needed
+      }),
+      prisma.doctor.findUnique({
+        where: { email: email },
+        include: {
+          patientDetails: {
+            include: {
+              patientTreatments: true,
+            },
+          },
+          appointments: true,
+        }, // Include related patient details and appointments if found in Doctor table
+      }),
+      prisma.admin.findUnique({
+        where: { email: email },
+      }),
+    ]);
 
+    // Check if user was found in User collection
     if (user) {
       response = { type: 'user', details: user };
     }
 
-    // If not found in User, check in Doctor collection
-    if (!response) {
-      let doctor = await prisma.doctor.findUnique({
-        where: { email: email },
-        include: { patientDetails: true }, // Include related patient details if needed
-      });
-
-      if (doctor) {
-        response = { type: 'doctor', details: doctor };
-      }
+    // If not found in User, check if found in Doctor collection
+    else if (doctor) {
+      response = { type: 'doctor', details: doctor };
     }
 
-    // If not found in Doctor, check in Admin collection
-    if (!response) {
-      let admin = await prisma.admin.findUnique({
-        where: { email: email },
-      });
-
-      if (admin) {
-        response = { type: 'admin', details: admin };
-      }
+    // If not found in Doctor, check if found in Admin collection
+    else if (admin) {
+      response = { type: 'admin', details: admin };
     }
 
     // If user not found in any collection
@@ -57,6 +63,8 @@ router.get('/userDetails', authenticate, async (req: any, res: any) => {
   } catch (error) {
     console.error('Error fetching user details:', error);
     res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    await prisma.$disconnect(); // Disconnect Prisma client after query execution
   }
 });
 

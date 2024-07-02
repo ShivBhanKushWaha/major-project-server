@@ -7,6 +7,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model PatientTreatment {
+  id           Int      @id @default(autoincrement())
+  patientId    Int
+  doctorId     Int
+  medication   String
+  therapies    String
+  treatment    String
+  patient      PatientDetails @relation(fields: [patientId], references: [id])
+  doctor       Doctor         @relation(fields: [doctorId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 model User {
   id           Int           @id @default(autoincrement())
   name         String
@@ -50,6 +63,7 @@ model Doctor {
   experience         String
   appointments       Appointment[]
   patientDetails     PatientDetails[]
+  patientTreatments  PatientTreatment[]
 }
 
 model PatientDetails {
@@ -79,6 +93,7 @@ model PatientDetails {
   doctorId                 Int
   selectSlot               String?
   doctor                   Doctor   @relation(fields: [doctorId], references: [id])
+  patientTreatments        PatientTreatment[]
 }
 
 model Appointment {
