@@ -121,7 +121,7 @@ async function main() {
     return prisma.patientDetails.create({
       data: {
         familyMember: `Family Member ${i + 1}`,
-        age: `30 + ${i}`,
+        age: `${30 + i}`, // Make sure age is a valid string representation
         gender: i % 2 === 0 ? 'Male' : 'Female',
         contactNumber: `1122334455${i}`,
         historyOfMentalIssue: i % 2 === 0 ? 'No' : 'Yes',

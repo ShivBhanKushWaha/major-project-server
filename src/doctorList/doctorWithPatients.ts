@@ -47,7 +47,7 @@ router.get('/doctorWithPatient/:id', async (req, res) => {
       updatedAt: doctor.updatedAt,
       experience: doctor.experience,
     };
-    // @ts-ignore
+    
     const patientDetail : any = doctor.patientDetails;
 
     res.status(200).json({ doctorDetail, patientDetail });
