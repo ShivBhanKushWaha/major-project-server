@@ -1,13 +1,8 @@
-// seed.ts
-
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-
-// @ts-ignore
 const generateTimeSlots = (startTime, endTime) => {
-  // @ts-ignore
   const slots = [];
   let currentTime = new Date(startTime);
 
@@ -20,8 +15,7 @@ const generateTimeSlots = (startTime, endTime) => {
   return slots;
 };
 
-// @ts-ignore
-const formatTime = (date) => {
+const formatTime = date => {
   const hours = date.getHours();
   const minutes = date.getMinutes();
   const period = hours >= 12 ? 'PM' : 'AM';
@@ -72,7 +66,7 @@ async function main() {
   ];
 
   // Create 10 doctors
-  const doctors = await Promise.all(doctorNames.map(async (name, i) => {
+  const doctors = await Promise.all(Array.from({ length: 10 }).map(async (_, i) => {
     const startTime = new Date('2024-07-01T10:00:00');
     const endTime = new Date('2024-07-01T13:00:00');
     const availability = generateTimeSlots(startTime, endTime);
@@ -81,7 +75,7 @@ async function main() {
 
     return prisma.doctor.create({
       data: {
-        name,
+        name: doctorNames[i],
         phone: `123456789${i + 1}`,
         email: `doctor${i + 1}@example.com`,
         specialization: `Specialization ${i + 1}`,
@@ -109,10 +103,10 @@ async function main() {
   console.log('Doctors created:', doctors);
 
   // Create 10 users
-  const users = await Promise.all(userNames.map(async (name, i) => {
+  const users = await Promise.all(Array.from({ length: 10 }).map(async (_, i) => {
     return prisma.user.create({
       data: {
-        name,
+        name: userNames[i],
         email: `user${i + 1}@example.com`,
         mobileNumber: `987654321${i}`,
         password: `userpassword${i + 1}`
@@ -127,7 +121,7 @@ async function main() {
     return prisma.patientDetails.create({
       data: {
         familyMember: `Family Member ${i + 1}`,
-        age: 30 + i,
+        age: `30 + ${i}`,
         gender: i % 2 === 0 ? 'Male' : 'Female',
         contactNumber: `1122334455${i}`,
         historyOfMentalIssue: i % 2 === 0 ? 'No' : 'Yes',
@@ -142,12 +136,12 @@ async function main() {
         triggerPoint: `Trigger Point ${i + 1}`,
         capacityOfWork: `Capacity ${i + 1}`,
         sleepProper: i % 2 === 0 ? 'Yes' : 'No',
-        timeOfSleep: `${6 + i} hours`,
+        timeOfSleep: `6 + ${i} hours`,
         eatingProperly: i % 2 === 0 ? 'Yes' : 'No',
         interestedToDoSomething: i % 2 === 0 ? 'Yes' : 'No',
         notInterested: `Not Interested ${i + 1}`,
-        selfTime: 'yes',
-        notSelfTime: 'no',
+        selfTime: i % 2 === 0 ? 'Yes' : 'No',
+        notSelfTime: i % 2 === 0 ? 'No' : 'Yes',
         doctorId: doctors[i % doctors.length].id // Link to a doctor
       }
     });
