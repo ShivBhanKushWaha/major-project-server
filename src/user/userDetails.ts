@@ -7,7 +7,8 @@ const prisma = new PrismaClient();
 
 router.get('/userDetails', authenticate, async (req: any, res: any) => {
   const email = req.email;
-
+  console.log(email.email);
+  const id = email.email;
   try {
     // Define custom response structure
     let response: {
@@ -18,14 +19,14 @@ router.get('/userDetails', authenticate, async (req: any, res: any) => {
     // Parallel promises to search in all collections
     const [user, doctor, admin] = await Promise.all([
       prisma.user.findUnique({
-        where: { email: email },
+        where: { id: id },
         include: {
           appointments: true,
           patientTreatments: true, // Include patientTreatments here
         },
       }),
       prisma.doctor.findUnique({
-        where: { email: email },
+        where: { id: id },
         include: {
           patientDetails: {
             include: {
@@ -37,7 +38,7 @@ router.get('/userDetails', authenticate, async (req: any, res: any) => {
         },
       }),
       prisma.admin.findUnique({
-        where: { email: email },
+        where: { id: id },
       }),
     ]);
 
