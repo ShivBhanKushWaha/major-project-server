@@ -27,13 +27,14 @@ async function main() {
   // Function to delete all existing data
   async function deleteAllData() {
     try {
-      // Delete all data from related tables first to avoid foreign key constraints
+      // Delete all data from related tables, respecting foreign key constraints
       await prisma.appointment.deleteMany({});
+      await prisma.patientTreatment.deleteMany({}); // Delete PatientTreatment first
       await prisma.patientDetails.deleteMany({});
       await prisma.user.deleteMany({});
       await prisma.admin.deleteMany({});
       await prisma.doctor.deleteMany({});
-  
+    
       console.log('All data deleted successfully');
     } catch (error) {
       console.error('Error deleting data:', error);
@@ -72,13 +73,13 @@ async function main() {
     const availability = generateTimeSlots(startTime, endTime);
     const unBookedSlote = [...availability];
     const bookedSlote = []; // Initially empty
-
+  
     return prisma.doctor.create({
       data: {
         name: doctorNames[i],
-        phone: `123456789${i + 1}`,
+        phone: `123456780${i + 1}`, // Ensure unique phone numbers
         email: `doctor${i + 1}@example.com`,
-        specialization: `Specialization ${i + 1}`,
+        specialization: `Specialization ${i + 1}`, // Replace with actual Indian specializations
         address1: `Address 1 - ${i + 1}`,
         address2: `Address 2 - ${i + 1}`,
         city: `City ${i + 1}`,
@@ -99,6 +100,7 @@ async function main() {
       }
     });
   }));
+
 
   console.log('Doctors created:', doctors);
 
@@ -142,7 +144,8 @@ async function main() {
         notInterested: `Not Interested ${i + 1}`,
         selfTime: i % 2 === 0 ? 'Yes' : 'No',
         notSelfTime: i % 2 === 0 ? 'No' : 'Yes',
-        doctorId: doctors[i % doctors.length].id // Link to a doctor
+        doctorId: doctors[i % doctors.length].id, // Link to a doctor
+        selectSlot: `Slot ${i + 1}` // Provide a dummy selectSlot value
       }
     });
   }));

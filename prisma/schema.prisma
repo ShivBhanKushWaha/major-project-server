@@ -92,7 +92,7 @@ model PatientDetails {
   selfTime                 String
   notSelfTime              String
   doctorId                 Int
-  selectSlot               String
+  selectSlot               String?
   doctor                   Doctor             @relation(fields: [doctorId], references: [id])
   patientTreatments        PatientTreatment[]
 }
