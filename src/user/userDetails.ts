@@ -7,57 +7,74 @@ const prisma = new PrismaClient();
 
 router.get('/userDetails', authenticate, async (req: any, res: any) => {
   const email = req.email;
-  console.log(email.email);
   const id = email.email;
+  let response: { type: 'user' | 'doctor' | 'admin'; details: any; } | null = null;
+
+  const isNumericId = /^\d+$/.test(id); // Check if the id is a numeric string
+
   try {
-    // Define custom response structure
-    let response: {
-      type: 'user' | 'doctor' | 'admin';
-      details: any;
-    } | null = null;
+    if (isNumericId) {
+      const numericId = parseInt(id, 10);
 
-    // Parallel promises to search in all collections
-    const [user, doctor, admin] = await Promise.all([
-      prisma.user.findUnique({
-        where: { id: id },
-        include: {
-          appointments: true,
-          patientTreatments: true, // Include patientTreatments here
-        },
-      }),
-      prisma.doctor.findUnique({
-        where: { id: id },
-        include: {
-          patientDetails: {
-            include: {
-              patientTreatments: true,
-            },
+      const [user, doctor, admin] = await Promise.all([
+        prisma.user.findUnique({
+          where: { id: numericId },
+          include: {
+            appointments: true,
+            patientTreatments: true,
           },
-          appointments: true,
-          patientTreatments: true,
-        },
-      }),
-      prisma.admin.findUnique({
-        where: { id: id },
-      }),
-    ]);
+        }),
+        prisma.doctor.findUnique({
+          where: { id: numericId },
+          include: {
+            patientDetails: {
+              include: {
+                patientTreatments: true,
+              },
+            },
+            appointments: true,
+            patientTreatments: true,
+          },
+        }),
+        prisma.admin.findUnique({
+          where: { id: numericId },
+        }),
+      ]);
 
-    // Check if user was found in User collection
-    if (user) {
-      response = { type: 'user', details: user };
+      if (user) response = { type: 'user', details: user };
+      else if (doctor) response = { type: 'doctor', details: doctor };
+      else if (admin) response = { type: 'admin', details: admin };
+    } else {
+      const [user, doctor, admin] = await Promise.all([
+        prisma.user.findUnique({
+          where: { email: id },
+          include: {
+            appointments: true,
+            patientTreatments: true,
+          },
+        }),
+        prisma.doctor.findUnique({
+          where: { email: id },
+          include: {
+            patientDetails: {
+              include: {
+                patientTreatments: true,
+              },
+            },
+            appointments: true,
+            patientTreatments: true,
+          },
+        }),
+        prisma.admin.findUnique({
+          where: { email: id },
+        }),
+      ]);
+
+      if (user) response = { type: 'user', details: user };
+      else if (doctor) response = { type: 'doctor', details: doctor };
+      else if (admin) response = { type: 'admin', details: admin };
     }
 
-    // If not found in User, check if found in Doctor collection
-    else if (doctor) {
-      response = { type: 'doctor', details: doctor };
-    }
-
-    // If not found in Doctor, check if found in Admin collection
-    else if (admin) {
-      response = { type: 'admin', details: admin };
-    }
-
-    // If user not found in any collection
     if (!response) {
       return res.status(404).json({ message: 'User not found' });
     }
