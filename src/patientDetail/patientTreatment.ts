@@ -9,13 +9,13 @@ router.use(express.json()); // Middleware to parse JSON bodies
 // Create a new patient treatment
 router.post('/patient/treatment', async (req, res) => {
   try {
-    const { patientId,doctorId, medication, therapies, treatment } = req.body;
+    const { patientId, doctorId, medication, therapies, treatment } = req.body;
 
     const patientTreatment = await prisma.patientTreatment.create({
       data: {
-        patientId,
+        patientId : parseInt(patientId, 10),
         medication,
-        doctorId,
+        doctorId : parseInt(doctorId, 10),
         therapies,
         treatment,
       },
