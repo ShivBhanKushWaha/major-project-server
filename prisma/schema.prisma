@@ -7,26 +7,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model PatientTreatment {
-  id           Int      @id @default(autoincrement())
-  patientId    Int
-  doctorId     Int
-  medication   String
-  therapies    String
-  treatment    String
-  patient      PatientDetails @relation(fields: [patientId], references: [id])
-  doctor       Doctor         @relation(fields: [doctorId], references: [id])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+model User {
+  id                Int                @id @default(autoincrement())
+  name              String
+  email             String             @unique
+  mobileNumber      String
+  password          String
+  appointments      Appointment[]
+  patientTreatments PatientTreatment[] // Add this line if not already present
 }
 
-model User {
-  id           Int           @id @default(autoincrement())
-  name         String
-  email        String        @unique
-  mobileNumber String
-  password     String
-  appointments Appointment[]
+model PatientTreatment {
+  id          Int            @id @default(autoincrement())
+  treatment   String
+  patientId   Int
+  patient     PatientDetails  @relation(fields: [patientId], references: [id])
+  doctorId    Int
+  doctor      Doctor          @relation(fields: [doctorId], references: [id])
+  medication  String
+  therapies   String
+  userId      Int
+  user        User            @relation(fields: [userId], references: [id])
 }
 
 model Admin {
@@ -37,10 +38,10 @@ model Admin {
 }
 
 model Doctor {
-  id                 Int              @id @default(autoincrement())
+  id                 Int                @id @default(autoincrement())
   name               String
-  phone              String           @unique
-  email              String           @unique
+  phone              String             @unique
+  email              String             @unique
   specialization     String
   address1           String
   address2           String?
@@ -54,12 +55,12 @@ model Doctor {
   otherQualification String?
   gender             String
   fees               Float
-  availability       String[]         // Original availability
-  bookedSlote        String[]         // New field for booked slots
-  unBookedSlote      String[]         // New field for unbooked slots
+  availability       String[] // Original availability
+  bookedSlote        String[] // New field for booked slots
+  unBookedSlote      String[] // New field for unbooked slots
   password           String
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
   experience         String
   appointments       Appointment[]
   patientDetails     PatientDetails[]
@@ -67,7 +68,7 @@ model Doctor {
 }
 
 model PatientDetails {
-  id                       Int      @id @default(autoincrement())
+  id                       Int                @id @default(autoincrement())
   familyMember             String
   age                      String
   gender                   String
@@ -91,8 +92,8 @@ model PatientDetails {
   selfTime                 String
   notSelfTime              String
   doctorId                 Int
-  selectSlot               String?
-  doctor                   Doctor   @relation(fields: [doctorId], references: [id])
+  selectSlot               String
+  doctor                   Doctor             @relation(fields: [doctorId], references: [id])
   patientTreatments        PatientTreatment[]
 }
 
@@ -101,7 +102,7 @@ model Appointment {
   doctorId  Int
   userId    Int
   date      DateTime
-  status    String // e.g., "treated", "booked"
+  status    String? // e.g., "treated", "booked"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

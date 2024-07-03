@@ -9,24 +9,27 @@ router.use(express.json()); // Middleware to parse JSON bodies
 // Create a new patient treatment
 router.post('/patient/treatment', async (req, res) => {
   try {
-    const { patientId, doctorId, medication, therapies, treatment } = req.body;
+    const { patientId, userId, doctorId, medication, therapies, treatment } = req.body;
 
     const patientTreatment = await prisma.patientTreatment.create({
       data: {
-        patientId : parseInt(patientId, 10),
+        patientId: parseInt(patientId, 10),
+        doctorId: parseInt(doctorId, 10),
+        userId : parseInt(userId, 10),
         medication,
-        doctorId : parseInt(doctorId, 10),
         therapies,
         treatment,
       },
     });
 
-    res.status(201).json(patientTreatment);
+    res.status(201).json({message : "Successfully submitted"});
   } catch (error) {
     console.error('Error creating patient treatment:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
 
 
 export default router;

@@ -21,7 +21,8 @@ router.get('/userDetails', authenticate, async (req: any, res: any) => {
         where: { email: email },
         include: {
           appointments: true,
-        }, // Include related appointments if needed
+          patientTreatments: true, // Include patientTreatments here
+        },
       }),
       prisma.doctor.findUnique({
         where: { email: email },
@@ -32,7 +33,8 @@ router.get('/userDetails', authenticate, async (req: any, res: any) => {
             },
           },
           appointments: true,
-        }, // Include related patient details and appointments if found in Doctor table
+          patientTreatments: true,
+        },
       }),
       prisma.admin.findUnique({
         where: { email: email },
