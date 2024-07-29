@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "start": "tsc && node ./dist/index.js",
+    "build": "tsc -b",
+    "start": "tsc && node dist/index.js",
     "dev": "npx ts-node src/index.ts"
   },
   "author": "Shivbhan Kushwaha",
